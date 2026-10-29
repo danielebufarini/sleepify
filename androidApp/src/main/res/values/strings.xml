@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Sleepify</string>
+    <string name="subtitle">Il tuo ritmo, un ciclo alla volta.</string>
+    <string name="calculator_title">Calcolatore del sonno</string>
+    <string name="mode_label">Che cosa vuoi calcolare?</string>
+    <string name="bedtime">Andare a letto</string>
+    <string name="wake_up">Svegliarmi</string>
+    <string name="wake_time">Voglio svegliarmi alle</string>
+    <string name="bed_time">Vado a letto alle</string>
+    <string name="latency">Tempo per addormentarsi</string>
+    <string name="minutes">%1$d minuti</string>
+    <string name="minimum_cycles">Cicli minimi</string>
+    <string name="maximum_cycles">Cicli massimi</string>
+    <string name="cycles">%1$d cicli</string>
+    <string name="bedtime_results">Orari per andare a letto</string>
+    <string name="wake_results">Orari per svegliarti</string>
+    <plurals name="result_count"><item quantity="one">%d orario</item><item quantity="other">%d orari</item></plurals>
+    <string name="result_detail">%1$d cicli · %2$s di sonno</string>
+    <string name="previous_day">Giorno precedente</string>
+    <string name="same_day">Stesso giorno</string>
+    <string name="next_day">Giorno successivo</string>
+    <string name="copy_time">Copia l’orario %1$s</string>
+    <string name="copied">Orario %1$s copiato</string>
+    <string name="estimate_title">Come funziona</string>
+    <string name="estimate_note">Calcolo indicativo basato su cicli di 90 minuti. Il tempo per addormentarsi viene incluso nell’orario.</string>
+    <string name="disclaimer">I cicli reali del sonno variano da persona a persona. Questo strumento fornisce stime, non previsioni mediche.</string>
+    <string name="close">Chiudi</string>
+</resources>

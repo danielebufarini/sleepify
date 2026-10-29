@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Sleepify</string>
+    <string name="subtitle">Your rhythm, one cycle at a time.</string>
+    <string name="calculator_title">Sleep calculator</string>
+    <string name="mode_label">What would you like to calculate?</string>
+    <string name="bedtime">Go to bed</string>
+    <string name="wake_up">Wake up</string>
+    <string name="wake_time">I want to wake up at</string>
+    <string name="bed_time">I go to bed at</string>
+    <string name="latency">Time to fall asleep</string>
+    <string name="minutes">%1$d minutes</string>
+    <string name="minimum_cycles">Minimum cycles</string>
+    <string name="maximum_cycles">Maximum cycles</string>
+    <string name="cycles">%1$d cycles</string>
+    <string name="bedtime_results">Times to go to bed</string>
+    <string name="wake_results">Times to wake up</string>
+    <plurals name="result_count"><item quantity="one">%d time</item><item quantity="other">%d times</item></plurals>
+    <string name="result_detail">%1$d cycles · %2$s of sleep</string>
+    <string name="previous_day">Previous day</string>
+    <string name="same_day">Same day</string>
+    <string name="next_day">Next day</string>
+    <string name="copy_time">Copy time %1$s</string>
+    <string name="copied">Time %1$s copied</string>
+    <string name="estimate_title">How it works</string>
+    <string name="estimate_note">Estimates use 90-minute cycles. The time to fall asleep is included in the calculation.</string>
+    <string name="disclaimer">Actual sleep cycles vary from person to person. This tool provides estimates, not medical predictions.</string>
+    <string name="close">Close</string>
+</resources>
