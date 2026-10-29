@@ -459,6 +459,193 @@
           }
         }
       }
+    },
+    "set_alarm": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imposta sveglia alle %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set alarm for %@"
+          }
+        }
+      }
+    },
+    "system_alarm": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sveglia di sistema"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System alarm"
+          }
+        }
+      }
+    },
+    "alarm_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "È ora di alzarsi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time to wake up"
+          }
+        }
+      }
+    },
+    "alarm_scheduled": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sveglia impostata alle %@, alla prossima occorrenza dell’orario."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alarm set for %@, at the next occurrence of this time."
+          }
+        }
+      }
+    },
+    "alarm_permission_denied": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sveglia non impostata. Consenti a Sleepify di usare le sveglie nelle Impostazioni."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alarm not set. Allow Sleepify to use alarms in Settings."
+          }
+        }
+      }
+    },
+    "alarm_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile impostare la sveglia. Riprova."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not set the alarm. Try again."
+          }
+        }
+      }
+    },
+    "alarm_cancel_failed": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile annullare la sveglia. Riprova."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not cancel the alarm. Try again."
+          }
+        }
+      }
+    },
+    "open_settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri Impostazioni"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
+          }
+        }
+      }
+    },
+    "scheduled_alarms": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sveglie impostate"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scheduled alarms"
+          }
+        }
+      }
+    },
+    "alarm_once_note": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le sveglie suonano una sola volta, alla prossima occorrenza dell’orario. Modificare il calcolo non cambia le sveglie già impostate."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alarms ring once, at the next occurrence of their time. Changing the calculation does not change alarms already set."
+          }
+        }
+      }
+    },
+    "cancel_alarm": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annulla sveglia delle %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel alarm for %@"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -86,6 +86,14 @@ fun SleepifyScreen(session: SleepifySession) {
                             Spacer(Modifier.width(16.dp))
                             Icon(painterResource(R.drawable.alarm), null, Modifier.size(22.dp))
                         }
+                        if (bedtime) {
+                            Button(onClick = { setSystemAlarm(context, settings.referenceMinutes) },
+                                modifier = Modifier.fillMaxWidth().testTag("set_reference_alarm")) {
+                                Icon(painterResource(R.drawable.alarm), null, Modifier.size(20.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(R.string.set_alarm, timeText(settings.referenceMinutes)))
+                            }
+                        }
                         Spacer(Modifier.height(4.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(stringResource(R.string.latency), Modifier.weight(1f),
@@ -122,7 +130,9 @@ fun SleepifyScreen(session: SleepifySession) {
                         }
                         state.results.forEach { result ->
                             val copiedMessage = stringResource(R.string.copied, result.timeText)
-                            ResultRow(result) {
+                            ResultRow(result,
+                                onAlarm = if (bedtime) null else ({ setSystemAlarm(context, result.timeMinutes) }),
+                            ) {
                                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                 clipboard.setPrimaryClip(ClipData.newPlainText("Sleepify", result.timeText))
                                 // Android 13+ already displays a system clipboard confirmation.
@@ -206,7 +216,7 @@ private fun CyclePicker(label: String, selected: Int, range: IntRange, tag: Stri
 }
 
 @Composable
-private fun ResultRow(result: SleepResult, onCopy: () -> Unit) {
+private fun ResultRow(result: SleepResult, onAlarm: (() -> Unit)?, onCopy: () -> Unit) {
     Row(Modifier.fillMaxWidth().background(Raised, RoundedCornerShape(18.dp)).padding(start = 18.dp, end = 8.dp,
         top = 14.dp, bottom = 14.dp).testTag("result_${result.cycles}"), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
@@ -221,8 +231,16 @@ private fun ResultRow(result: SleepResult, onCopy: () -> Unit) {
                 else -> R.string.same_day
             }), color = Lavender, style = MaterialTheme.typography.labelSmall)
         }
-        IconButton(onCopy, Modifier.testTag("copy_${result.cycles}")) {
-            Icon(painterResource(R.drawable.copy), stringResource(R.string.copy_time, result.timeText), tint = Lavender)
+        Column {
+            if (onAlarm != null) {
+                IconButton(onAlarm, Modifier.testTag("alarm_${result.cycles}")) {
+                    Icon(painterResource(R.drawable.alarm), stringResource(R.string.set_alarm, result.timeText),
+                        tint = Lavender)
+                }
+            }
+            IconButton(onCopy, Modifier.testTag("copy_${result.cycles}")) {
+                Icon(painterResource(R.drawable.copy), stringResource(R.string.copy_time, result.timeText), tint = Lavender)
+            }
         }
     }
 }

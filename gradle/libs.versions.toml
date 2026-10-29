@@ -30,3 +30,4 @@ compose-test = { module = "androidx.compose.ui:ui-test-junit4-android", version.
 compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose-test" }
 test-runner = { module = "androidx.test:runner", version = "1.7.0" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.7.0" }
+espresso-intents = { module = "androidx.test.espresso:espresso-intents", version = "3.7.0" }

@@ -1,0 +1,23 @@
+{
+  "sourceLanguage": "it",
+  "strings": {
+    "NSAlarmKitUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleepify imposta le sveglie agli orari di risveglio che scegli."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleepify schedules the wake-up alarms you choose."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

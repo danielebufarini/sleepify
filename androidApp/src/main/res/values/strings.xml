@@ -21,6 +21,8 @@
     <string name="next_day">Giorno successivo</string>
     <string name="copy_time">Copia l’orario %1$s</string>
     <string name="copied">Orario %1$s copiato</string>
+    <string name="set_alarm">Imposta sveglia alle %1$s</string>
+    <string name="alarm_unavailable">Impossibile aprire una sveglia. Verifica che sia installata un’app Orologio compatibile.</string>
     <string name="estimate_title">Come funziona</string>
     <string name="estimate_note">Calcolo indicativo basato su cicli di 90 minuti. Il tempo per addormentarsi viene incluso nell’orario.</string>
     <string name="disclaimer">I cicli reali del sonno variano da persona a persona. Questo strumento fornisce stime, non previsioni mediche.</string>

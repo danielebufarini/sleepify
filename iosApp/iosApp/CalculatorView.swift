@@ -17,6 +17,9 @@ struct CalculatorView: View {
     @ObservedObject var model: CalculatorModel
     @State private var showingTime = false
     @State private var copiedCycles: Int32?
+    @StateObject private var systemAlarms = SystemAlarms()
+    @State private var alarmNotice: AlarmNotice?
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .largeTitle) private var clockSize: CGFloat = 44
     private var bedtime: Bool { model.state.settings.mode == .bedtime }
@@ -30,6 +33,7 @@ struct CalculatorView: View {
                     header
                     inputs
                     results
+                    if !systemAlarms.alarms.isEmpty { scheduledAlarms }
                     explanation
                 }
                 .frame(maxWidth: 560)
@@ -41,7 +45,25 @@ struct CalculatorView: View {
         .foregroundStyle(Palette.text)
         .tint(Palette.lavender)
         .task { await model.observe() }
+        .task { await systemAlarms.observe() }
+        .onReceive(systemAlarms.$notice) { alarmNotice = $0 }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { systemAlarms.refresh() }
+        }
         .onChange(of: model.state.settings) { _, _ in copiedCycles = nil }
+        .alert(item: $alarmNotice) { notice in
+            if notice.needsSettings {
+                Alert(title: Text("system_alarm"), message: Text(notice.message),
+                    primaryButton: .default(Text("open_settings")) {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    }, secondaryButton: .cancel(Text("close")))
+            } else {
+                Alert(title: Text("system_alarm"), message: Text(notice.message),
+                    dismissButton: .cancel(Text("close")))
+            }
+        }
         .sheet(isPresented: $showingTime) {
             NavigationStack {
                 DatePicker(bedtime ? "wake_time" : "bed_time",
@@ -100,6 +122,18 @@ struct CalculatorView: View {
                 .accessibilityLabel(tr(bedtime ? "wake_time" : "bed_time"))
                 .accessibilityValue(referenceTime)
                 .accessibilityIdentifier("reference_time")
+                if bedtime {
+                    Button {
+                        scheduleAlarm(minutes: Int(model.state.settings.referenceMinutes))
+                    } label: {
+                        Label(String(format: tr("set_alarm"), referenceTime), systemImage: "alarm")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity).padding(.vertical, 8)
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(systemAlarms.isScheduling)
+                    .accessibilityIdentifier("set_reference_alarm")
+                }
             }
             VStack(spacing: 8) {
                 ViewThatFits(in: .horizontal) {
@@ -208,18 +242,31 @@ struct CalculatorView: View {
                         Text(tr(result.dayOffset < 0 ? "previous_day" : result.dayOffset > 0 ? "next_day" : "same_day"))
                             .font(.caption2.weight(.medium)).foregroundStyle(Palette.lavender)
                     }.frame(maxWidth: .infinity, alignment: .leading)
-                    Button {
-                        UIPasteboard.general.string = result.timeText
-                        copiedCycles = result.cycles
-                        UIAccessibility.post(notification: .announcement,
-                            argument: String(format: tr("copied"), result.timeText))
-                    } label: {
-                        Image(systemName: copiedCycles == result.cycles ? "checkmark" : "doc.on.doc")
-                            .font(.body).frame(width: 44, height: 44)
+                    VStack(spacing: 0) {
+                        if !bedtime {
+                            Button {
+                                scheduleAlarm(minutes: Int(result.timeMinutes))
+                            } label: {
+                                Image(systemName: "alarm").font(.body).frame(width: 44, height: 44)
+                            }
+                            .buttonStyle(.plain).foregroundStyle(Palette.lavender)
+                            .disabled(systemAlarms.isScheduling)
+                            .accessibilityLabel(String(format: tr("set_alarm"), result.timeText))
+                            .accessibilityIdentifier("alarm_\(result.cycles)")
+                        }
+                        Button {
+                            UIPasteboard.general.string = result.timeText
+                            copiedCycles = result.cycles
+                            UIAccessibility.post(notification: .announcement,
+                                argument: String(format: tr("copied"), result.timeText))
+                        } label: {
+                            Image(systemName: copiedCycles == result.cycles ? "checkmark" : "doc.on.doc")
+                                .font(.body).frame(width: 44, height: 44)
+                        }
+                        .buttonStyle(.plain).foregroundStyle(Palette.lavender)
+                        .accessibilityLabel(String(format: tr(copiedCycles == result.cycles ? "copied" : "copy_time"), result.timeText))
+                        .accessibilityIdentifier("copy_\(result.cycles)")
                     }
-                    .buttonStyle(.plain).foregroundStyle(Palette.lavender)
-                    .accessibilityLabel(String(format: tr(copiedCycles == result.cycles ? "copied" : "copy_time"), result.timeText))
-                    .accessibilityIdentifier("copy_\(result.cycles)")
                 }
                 .padding(.leading, 18).padding(.trailing, 8).padding(.vertical, 14)
                 .background(Palette.raised, in: RoundedRectangle(cornerRadius: 18))
@@ -227,6 +274,33 @@ struct CalculatorView: View {
                 .accessibilityIdentifier("result_\(result.cycles)")
             }
         }
+    }
+
+    private var scheduledAlarms: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("scheduled_alarms").font(.headline)
+            Text("alarm_once_note").font(.caption).foregroundStyle(Palette.muted)
+            ForEach(systemAlarms.alarms) { alarm in
+                HStack {
+                    Label(alarm.timeText, systemImage: "alarm.fill").monospacedDigit()
+                    Spacer()
+                    Button { systemAlarms.cancel(alarm) } label: {
+                        Image(systemName: "trash").frame(width: 44, height: 44)
+                    }
+                    .disabled(systemAlarms.isScheduling)
+                    .accessibilityLabel(String(format: tr("cancel_alarm"), alarm.timeText))
+                    .accessibilityIdentifier("cancel_alarm_\(alarm.minutes)")
+                }
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("scheduled_alarm_\(alarm.minutes)")
+            }
+        }
+        .padding(20)
+        .background(Palette.panel, in: RoundedRectangle(cornerRadius: 24))
+    }
+
+    private func scheduleAlarm(minutes: Int) {
+        Task { await systemAlarms.schedule(minutes: minutes) }
     }
 
     private var explanation: some View {

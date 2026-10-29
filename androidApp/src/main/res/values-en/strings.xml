@@ -21,6 +21,8 @@
     <string name="next_day">Next day</string>
     <string name="copy_time">Copy time %1$s</string>
     <string name="copied">Time %1$s copied</string>
+    <string name="set_alarm">Set alarm for %1$s</string>
+    <string name="alarm_unavailable">Could not open an alarm. Make sure a compatible Clock app is installed.</string>
     <string name="estimate_title">How it works</string>
     <string name="estimate_note">Estimates use 90-minute cycles. The time to fall asleep is included in the calculation.</string>
     <string name="disclaimer">Actual sleep cycles vary from person to person. This tool provides estimates, not medical predictions.</string>
