@@ -40,7 +40,6 @@ struct CalculatorView: View {
                 if !systemAlarms.alarms.isEmpty { scheduledAlarms }
                 explanation
             }
-            .navigationTitle("Sleepify")
             .navigationDestination(isPresented: $showingResults) {
                 page {
                     Text(String(format: tr(bedtime ? "wake_reference" : "bed_reference"), referenceTime))
@@ -98,20 +97,19 @@ struct CalculatorView: View {
     }
 
     private func page<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        ZStack {
+        ScrollView {
+            VStack(spacing: 24, content: content)
+                .frame(maxWidth: 560)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 24)
+                .frame(maxWidth: .infinity)
+        }
+        .background {
             LinearGradient(colors: [Color(hex: 0x253052), Palette.night, Palette.night],
                 startPoint: .top, endPoint: .bottom).ignoresSafeArea()
-            ScrollView {
-                VStack(spacing: 24, content: content)
-                    .frame(maxWidth: 560)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 24)
-                    .frame(maxWidth: .infinity)
-            }
         }
+        .scrollEdgeEffectStyle(.soft, for: .top)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Palette.night, for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
