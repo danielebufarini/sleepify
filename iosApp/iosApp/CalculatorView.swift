@@ -16,7 +16,8 @@ private enum Palette {
 struct CalculatorView: View {
     @ObservedObject var model: CalculatorModel
     @State private var showingTime = false
-    @State private var copiedCycles: Int32?
+    @State private var showingResults = false
+    @State private var showingAbout = false
     @StateObject private var systemAlarms = SystemAlarms()
     @State private var alarmNotice: AlarmNotice?
     @Environment(\.scenePhase) private var scenePhase
@@ -25,21 +26,31 @@ struct CalculatorView: View {
     private var bedtime: Bool { model.state.settings.mode == .bedtime }
 
     var body: some View {
-        ZStack {
-            LinearGradient(colors: [Color(hex: 0x253052), Palette.night, Palette.night],
-                startPoint: .top, endPoint: .bottom).ignoresSafeArea()
-            ScrollView {
-                VStack(spacing: 24) {
-                    header
-                    inputs
+        NavigationStack {
+            page {
+                header
+                inputs
+                Button { showingResults = true } label: {
+                    Text("show_results").font(.headline)
+                        .foregroundStyle(Color(hex: 0x20183C))
+                        .frame(maxWidth: .infinity).padding(.vertical, 10)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityIdentifier("show_results")
+                if !systemAlarms.alarms.isEmpty { scheduledAlarms }
+                explanation
+            }
+            .navigationTitle("Sleepify")
+            .navigationDestination(isPresented: $showingResults) {
+                page {
+                    Text(String(format: tr(bedtime ? "wake_reference" : "bed_reference"), referenceTime))
+                        .font(.subheadline).foregroundStyle(Palette.muted)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     results
                     if !systemAlarms.alarms.isEmpty { scheduledAlarms }
                     explanation
                 }
-                .frame(maxWidth: 560)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 24)
-                .frame(maxWidth: .infinity)
+                .navigationTitle(tr("results_title"))
             }
         }
         .foregroundStyle(Palette.text)
@@ -50,7 +61,6 @@ struct CalculatorView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { systemAlarms.refresh() }
         }
-        .onChange(of: model.state.settings) { _, _ in copiedCycles = nil }
         .alert(item: $alarmNotice) { notice in
             if notice.needsSettings {
                 Alert(title: Text("system_alarm"), message: Text(notice.message),
@@ -84,6 +94,69 @@ struct CalculatorView: View {
             }
             .presentationDetents([.medium])
         }
+        .sheet(isPresented: $showingAbout) { about }
+    }
+
+    private func page<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        ZStack {
+            LinearGradient(colors: [Color(hex: 0x253052), Palette.night, Palette.night],
+                startPoint: .top, endPoint: .bottom).ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 24, content: content)
+                    .frame(maxWidth: 560)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 24)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Palette.night, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button { showingAbout = true } label: {
+                        Label("about", systemImage: "info.circle")
+                    }
+                    .accessibilityIdentifier("menu_about")
+                } label: {
+                    Label("menu", systemImage: "ellipsis")
+                }
+                .accessibilityIdentifier("app_menu")
+            }
+        }
+    }
+
+    private var about: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    Image(systemName: "moon.stars.fill")
+                        .font(.system(size: 64)).foregroundStyle(Palette.lavender)
+                        .accessibilityHidden(true)
+                    Text("Sleepify").font(.largeTitle.bold())
+                    Text(String(format: tr("version"),
+                        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
+                        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""))
+                        .accessibilityIdentifier("about_version")
+                    Text("calculator_title").foregroundStyle(Palette.muted)
+                }
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity).padding(32)
+            }
+            .background(Palette.night)
+            .navigationTitle(tr("about"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("close") { showingAbout = false }
+                        .accessibilityIdentifier("close_about")
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .foregroundStyle(Palette.text)
+        .tint(Palette.lavender)
     }
 
     private var header: some View {
@@ -91,7 +164,6 @@ struct CalculatorView: View {
             Image(systemName: "moon.stars.fill")
                 .font(.system(size: 42, weight: .light)).foregroundStyle(Palette.lavender)
                 .padding(.bottom, 6).accessibilityHidden(true)
-            Text("Sleepify").font(.largeTitle.bold()).tracking(-1)
             Text("calculator_title").font(.subheadline.weight(.medium))
             Text("subtitle").font(.subheadline).foregroundStyle(Palette.muted)
         }
@@ -254,18 +326,6 @@ struct CalculatorView: View {
                             .accessibilityLabel(String(format: tr("set_alarm"), result.timeText))
                             .accessibilityIdentifier("alarm_\(result.cycles)")
                         }
-                        Button {
-                            UIPasteboard.general.string = result.timeText
-                            copiedCycles = result.cycles
-                            UIAccessibility.post(notification: .announcement,
-                                argument: String(format: tr("copied"), result.timeText))
-                        } label: {
-                            Image(systemName: copiedCycles == result.cycles ? "checkmark" : "doc.on.doc")
-                                .font(.body).frame(width: 44, height: 44)
-                        }
-                        .buttonStyle(.plain).foregroundStyle(Palette.lavender)
-                        .accessibilityLabel(String(format: tr(copiedCycles == result.cycles ? "copied" : "copy_time"), result.timeText))
-                        .accessibilityIdentifier("copy_\(result.cycles)")
                     }
                 }
                 .padding(.leading, 18).padding(.trailing, 8).padding(.vertical, 14)
