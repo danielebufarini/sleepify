@@ -500,13 +500,13 @@
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sveglia non impostata. Consenti a Sleepify di usare le sveglie nelle Impostazioni."
+            "value": "Sveglia non impostata.\n\nIn Impostazioni → App → Sleepify, attiva l’interruttore «Sveglie».\n\nPoi torna in Sleepify e imposta di nuovo la sveglia."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Alarm not set. Allow Sleepify to use alarms in Settings."
+            "value": "Alarm not set.\n\nIn Settings → Apps → Sleepify, turn on “Alarms”.\n\nThen return to Sleepify and set the alarm again."
           }
         }
       }

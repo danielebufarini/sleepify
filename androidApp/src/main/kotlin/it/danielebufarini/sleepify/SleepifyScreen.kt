@@ -44,7 +44,6 @@ fun SleepifyScreen(session: SleepifySession) {
     val context = LocalContext.current
     var showingResults by rememberSaveable { mutableStateOf(false) }
     var showingAbout by rememberSaveable { mutableStateOf(false) }
-    var menuExpanded by remember { mutableStateOf(false) }
     val inputScroll = rememberScrollState()
     val resultsScroll = rememberScrollState()
     BackHandler(enabled = showingResults && !showingAbout) { showingResults = false }
@@ -54,29 +53,18 @@ fun SleepifyScreen(session: SleepifySession) {
         onSurfaceVariant = Muted, outline = Outline, secondaryContainer = Raised,
     )) {
         Scaffold(containerColor = Night, topBar = {
-            TopAppBar(
-                title = { Text(stringResource(if (showingResults) R.string.results_title else R.string.app_name)) },
-                navigationIcon = {
-                    if (showingResults) {
+            if (showingResults) {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.results_title)) },
+                    navigationIcon = {
                         IconButton(onClick = { showingResults = false }, modifier = Modifier.testTag("back_to_inputs")) {
                             Icon(painterResource(R.drawable.arrow_back), stringResource(R.string.back))
                         }
-                    }
-                },
-                actions = {
-                    Box {
-                        IconButton(onClick = { menuExpanded = true }, modifier = Modifier.testTag("app_menu")) {
-                            Icon(painterResource(R.drawable.more_vert), stringResource(R.string.menu))
-                        }
-                        DropdownMenu(menuExpanded, onDismissRequest = { menuExpanded = false }) {
-                            DropdownMenuItem(text = { Text(stringResource(R.string.about)) },
-                                onClick = { menuExpanded = false; showingAbout = true },
-                                modifier = Modifier.testTag("menu_about"))
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Night),
-            )
+                    },
+                    actions = { AppMenu(onAbout = { showingAbout = true }) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Night),
+                )
+            }
         }) { padding ->
             Box(
                 Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).background(Brush.verticalGradient(
@@ -90,7 +78,7 @@ fun SleepifyScreen(session: SleepifySession) {
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
                     if (!showingResults) {
-                        Header()
+                        Header(onAbout = { showingAbout = true })
                         SleepCard {
                             Text(stringResource(R.string.mode_label), style = MaterialTheme.typography.titleSmall)
                             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -213,14 +201,32 @@ fun SleepifyScreen(session: SleepifySession) {
 }
 
 @Composable
-private fun Header() {
-    Column(Modifier.fillMaxWidth().padding(bottom = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(painterResource(R.drawable.moon), null,
-            Modifier.size(60.dp).padding(bottom = 8.dp), tint = Lavender)
-        Text(stringResource(R.string.calculator_title), color = Text, style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(top = 4.dp))
-        Text(stringResource(R.string.subtitle), color = Muted, style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 6.dp))
+private fun Header(onAbout: () -> Unit) {
+    Box(Modifier.fillMaxWidth()) {
+        Column(Modifier.fillMaxWidth().padding(bottom = 4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(painterResource(R.drawable.moon), null,
+                Modifier.size(60.dp).padding(bottom = 8.dp), tint = Lavender)
+            Text(stringResource(R.string.calculator_title), color = Text, style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = 4.dp))
+            Text(stringResource(R.string.subtitle), color = Muted, style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 6.dp))
+        }
+        AppMenu(Modifier.align(Alignment.TopEnd), onAbout)
+    }
+}
+
+@Composable
+private fun AppMenu(modifier: Modifier = Modifier, onAbout: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier) {
+        IconButton(onClick = { expanded = true }, modifier = Modifier.testTag("app_menu")) {
+            Icon(painterResource(R.drawable.more_vert), stringResource(R.string.menu))
+        }
+        DropdownMenu(expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(text = { Text(stringResource(R.string.about)) },
+                onClick = { expanded = false; onAbout() },
+                modifier = Modifier.testTag("menu_about"))
+        }
     }
 }
 
